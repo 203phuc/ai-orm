@@ -44,16 +44,16 @@ export async function fetchAndFormatHotelReviews(
   }
 
   const serpApiUrl = `https://serpapi.com/search.json?engine=google_maps_reviews&place_id=${placeId}&sort_by=newestFirst&api_key=${apiKey}`;
-
+  console.log("ello");
   const response = await fetch(serpApiUrl);
   if (!response.ok) {
     throw new Error(`SerpApi error status: ${response.status}`);
   }
-
   const data: SerpApiResponse = await response.json();
+
   const placeInfo = data.place_info || {};
   const placeType = placeInfo.type || "";
-
+  console.log(data.place_info);
   // Hotel Validation
   const isHotel =
     placeType.toLowerCase().includes("hotel") ||
