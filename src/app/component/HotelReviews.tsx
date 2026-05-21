@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+
 // Define the shape of the review based on your Supabase table schema
 interface DBReview {
   id: string;
@@ -12,6 +13,7 @@ interface DBReview {
   status: "pending" | "resolved";
   created_at: string;
   review_date: string; // Added review_date to match your dataset schema
+
 }
 
 interface ApiResponse {
@@ -34,7 +36,6 @@ export default function HotelReviews({ placeId }: { placeId: string }) {
       try {
         setLoading(true);
         setError(null);
-
         // Call Next.js route handler
         const res = await fetch(`/api/reviews?placeId=${placeId}`);
         const result: ApiResponse = await res.json();
@@ -95,6 +96,7 @@ export default function HotelReviews({ placeId }: { placeId: string }) {
               {/* timestamp with the genuine SerpApi review_date */}
               <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
                 {review.review_date}
+
               </span>
             </div>
 
