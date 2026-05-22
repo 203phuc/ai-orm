@@ -49,11 +49,10 @@ export async function fetchAndFormatHotelReviews(
   if (!response.ok) {
     throw new Error(`SerpApi error status: ${response.status}`);
   }
-
   const data: SerpApiResponse = await response.json();
+
   const placeInfo = data.place_info || {};
   const placeType = placeInfo.type || "";
-
   // Hotel Validation
   const isHotel =
     placeType.toLowerCase().includes("hotel") ||
