@@ -58,19 +58,26 @@ Review:
 ${reviewText || "no review improvise"}
 """
 
-Rules:
-- Sound natural and professional
-- fast
 `;
 
-  const response = await client.models.generateContent({
-    model: "gemini-2.5-flash-lite",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: responseSchemaJson,
-    },
-  });
+  const response = await client.models
+    .generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: responseSchemaJson,
+      },
+    })
+    .catch((e) => {
+      const data = JSON.parse(e.message);
+      // console.error("error name: ", e.name);
+      // console.error("error message: ", data.error.message);
+      // console.error("error status: ", e.status);
+      const err = new Error(data.error.message);
+      (err as any).status = data.error.status;
+      throw err;
+    });
 
   const parsed = JSON.parse(response.text || "{}");
 

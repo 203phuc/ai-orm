@@ -13,15 +13,30 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    let message = "Failed to generate AI responses";
+    let status = 500;
+
+    if (error instanceof Error) {
+      // Gemini quota / rate limit
+      if (
+        error.message.includes("429") ||
+        error.message.includes("RESOURCE_EXHAUSTED")
+      ) {
+        message = "AI quota exceeded. Please try again later.";
+        status = 429;
+      } else {
+        message = error.message;
+      }
+    }
 
     return NextResponse.json(
       {
-        error: "Failed to generate AI responses",
+        success: false,
+        error: message,
       },
       {
-        status: 500,
+        status,
       },
     );
   }

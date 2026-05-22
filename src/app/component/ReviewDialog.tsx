@@ -30,7 +30,6 @@ export default function ReviewDialog({
   onClose,
   review,
 }: ReviewDialogProps) {
-  if (!isOpen || !review) return null;
   const [responses, setResponses] = useState<AIResponses | null>(null);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -50,6 +49,9 @@ export default function ReviewDialog({
           }),
         });
         const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Server error");
+        }
         setResponses(data);
       } catch (err) {
         console.error(err);
@@ -61,6 +63,11 @@ export default function ReviewDialog({
 
     generateAI();
   }, [isOpen, review]);
+  const handleClose = () => {
+    setResponses(null);
+    onClose();
+  };
+  if (!isOpen || !review) return null;
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn overflow-y-auto">
       <div className="bg-white rounded-lg p-6 max-w-4xl w-full shadow-xl mx-4">
@@ -126,7 +133,7 @@ export default function ReviewDialog({
         )}
         <div className="flex justify-end">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
           >
             Close Dialog
