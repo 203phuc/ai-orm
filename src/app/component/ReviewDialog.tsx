@@ -39,7 +39,7 @@ export default function ReviewDialog({
 
       setSaving(true);
 
-      const res = await fetch("/api/reviews/resolve", {
+      const res = await fetch("/api/reviews", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -98,6 +98,7 @@ export default function ReviewDialog({
   }, [isOpen, review]);
   const handleClose = () => {
     setResponses(null);
+    window.location.reload();
     onClose();
   };
   if (!isOpen || !review) return null;
