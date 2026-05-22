@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface FetchfieldProps {
   setPlaceId: (id: string) => void;
@@ -10,11 +11,25 @@ interface FetchfieldProps {
 const Fetchfield = ({ setPlaceId, loading }: FetchfieldProps) => {
   const [inputValue, setInputValue] = useState("");
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const handleSubmit = () => {
-    if (inputValue.trim()) {
-      setPlaceId(inputValue.trim());
+    if (!inputValue.trim()) return;
+
+    const value = inputValue.trim();
+
+    setPlaceId(value);
+
+    router.push(`/?placeId=${value}`);
+  }
+  useEffect(() => {
+    const placeId =
+    searchParams.get("placeId") || "";
+    if (placeId) {
+      setPlaceId(placeId);
     }
-  };
+  })
 
   return (
     <div className="mx-10">

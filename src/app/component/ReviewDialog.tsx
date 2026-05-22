@@ -32,6 +32,39 @@ export default function ReviewDialog({
 }: ReviewDialogProps) {
   const [responses, setResponses] = useState<AIResponses | null>(null);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  async function handleApprove(responseText: string) {
+    try {
+      if (!review) return;
+
+      setSaving(true);
+
+      const res = await fetch("/api/reviews/resolve", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reviewId: review.id,
+          approvedResponse: responseText,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed approving response");
+      }
+
+      alert("Review resolved successfully");
+
+      handleClose();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  }
   useEffect(() => {
     async function generateAI() {
       try {
@@ -118,16 +151,37 @@ export default function ReviewDialog({
             <div className="border rounded p-3">
               <h4 className="font-bold mb-2">Standard</h4>
               <p className="text-sm text-gray-700">{responses.standard}</p>
+              <button
+                onClick={() => handleApprove(responses.standard)}
+                disabled={saving}
+                className="bg-green-600 text-white px-3 py-1 rounded"
+              >
+                Approve
+              </button>
             </div>
 
             <div className="border rounded p-3">
               <h4 className="font-bold mb-2">Friendly</h4>
               <p className="text-sm text-gray-700">{responses.friendly}</p>
+              <button
+                onClick={() => handleApprove(responses.standard)}
+                disabled={saving}
+                className="bg-green-600 text-white px-3 py-1 rounded"
+              >
+                Approve
+              </button>
             </div>
 
             <div className="border rounded p-3">
               <h4 className="font-bold mb-2">Recovery</h4>
               <p className="text-sm text-gray-700">{responses.recovery}</p>
+              <button
+                onClick={() => handleApprove(responses.standard)}
+                disabled={saving}
+                className="bg-green-600 text-white px-3 py-1 rounded"
+              >
+                Approve
+              </button>
             </div>
           </div>
         )}
