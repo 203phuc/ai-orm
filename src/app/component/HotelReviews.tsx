@@ -13,6 +13,7 @@ interface DBReview {
   status: "pending" | "resolved";
   created_at: string;
   review_date: string; // Added review_date to match your dataset schema
+  approved_ai_response?: string;
 }
 
 interface ApiResponse {
@@ -122,14 +123,27 @@ export default function HotelReviews({ placeId, setLoadingParent }: parameter) {
             <p className="text-gray-700 text-sm whitespace-pre-line">
               {review.review_text}
             </p>
+            {review.approved_ai_response && (
+              <div className="mt-10 flex items-center mb-2 bg-blue-200">
+                <p className="text-black">
+                  Approved response: {review.approved_ai_response}
+                </p>
+              </div>
+            )}
             {/* 4. Inject the Dialog component, passing state and setter down */}
             <div className="mt-3 flex items-center">
-              <span className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+              <span
+                className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${
+                  review.status === "resolved"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-amber-100 text-amber-800"
+                }`}
+              >
                 Status: {review.status}
               </span>
             </div>
             <button
-              className="bg-amber-800 p-0.5"
+              className="mt-10 bg-amber-800 rounded-md p-0.5 border border-black"
               onClick={() => {
                 setSelectedReview(review);
                 setIsDialogOpen(true);

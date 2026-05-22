@@ -89,3 +89,53 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+
+    const { reviewId, approvedResponse } = body;
+
+    if (!reviewId || !approvedResponse) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "reviewId and approvedResponse are required",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("reviews")
+      .update({
+        status: "resolved",
+        approved_ai_response: approvedResponse,
+      })
+      .eq("id", reviewId)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return NextResponse.json({
+      success: true,
+      review: data,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: message,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
