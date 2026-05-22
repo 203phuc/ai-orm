@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ReviewDialog from "./ReviewDialog"; // 1. Import your dialog component
 
 // Define the shape of the review based on your Supabase table schema
 interface DBReview {
@@ -22,10 +23,17 @@ interface ApiResponse {
   message?: string;
 }
 
-export default function HotelReviews({ placeId }: { placeId: string }) {
+interface parameter {
+  placeId: string;
+  setLoadingParent?: (data: boolean) => void;
+}
+
+export default function HotelReviews({ placeId, setLoadingParent }: parameter) {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [selectedReview, setSelectedReview] = useState<DBReview | null>(null);
 
   useEffect(() => {
     if (!placeId) return;
@@ -33,6 +41,7 @@ export default function HotelReviews({ placeId }: { placeId: string }) {
     async function fetchAndSaveReviews() {
       try {
         setLoading(true);
+        if (setLoadingParent) setLoadingParent(true);
         setError(null);
         // Call Next.js route handler
         const res = await fetch(`/api/reviews?placeId=${placeId}`);
@@ -52,6 +61,7 @@ export default function HotelReviews({ placeId }: { placeId: string }) {
         );
       } finally {
         setLoading(false);
+        if (setLoadingParent) setLoadingParent(false);
       }
     }
 
@@ -112,15 +122,29 @@ export default function HotelReviews({ placeId }: { placeId: string }) {
             <p className="text-gray-700 text-sm whitespace-pre-line">
               {review.review_text}
             </p>
-
+            {/* 4. Inject the Dialog component, passing state and setter down */}
             <div className="mt-3 flex items-center">
               <span className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">
                 Status: {review.status}
               </span>
             </div>
+            <button
+              className="bg-amber-800 p-0.5"
+              onClick={() => {
+                setSelectedReview(review);
+                setIsDialogOpen(true);
+              }}
+            >
+              Generate AI
+            </button>
           </div>
         ))}
       </div>
+      <ReviewDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        review={selectedReview}
+      />
     </div>
   );
 }
