@@ -142,15 +142,17 @@ export default function HotelReviews({ placeId, setLoadingParent }: parameter) {
                 Status: {review.status}
               </span>
             </div>
-            <button
-              className="mt-10 bg-amber-800 rounded-md p-0.5 border border-black"
-              onClick={() => {
-                setSelectedReview(review);
-                setIsDialogOpen(true);
-              }}
-            >
-              Generate AI
-            </button>
+            {review.status !== "resolved" && (
+              <button
+                className="mt-10 bg-amber-800 rounded-md p-0.5 border border-black"
+                onClick={() => {
+                  setSelectedReview(review);
+                  setIsDialogOpen(true);
+                }}
+              >
+                Generate AI
+              </button>
+            )}
           </div>
         ))}
       </div>
