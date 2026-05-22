@@ -1,7 +1,7 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 
 interface FetchfieldProps {
   setPlaceId: (id: string) => void;
@@ -22,14 +22,13 @@ const Fetchfield = ({ setPlaceId, loading }: FetchfieldProps) => {
     setPlaceId(value);
 
     router.push(`/?placeId=${value}`);
-  }
+  };
   useEffect(() => {
-    const placeId =
-    searchParams.get("placeId") || "";
+    const placeId = searchParams.get("placeId") || "";
     if (placeId) {
       setPlaceId(placeId);
     }
-  })
+  }, []);
 
   return (
     <div className="mx-10">
